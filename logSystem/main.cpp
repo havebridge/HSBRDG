@@ -1,11 +1,13 @@
-#include <iostream>
+#include "..\ht\hashtable.h"
 
 int main(int argc, char** argv)
 {
 	(void)argc;
 	(void)argv;
 
-	std::cout << "Hello, world!" << '\n';
+	hsbrdg::hashtable user1("login");
+
+	user1.test_hash_func();
 
 	return 0;
 }
