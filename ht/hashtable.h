@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <string>
 #include <iostream>
+#include <vector>
+#include <cassert>
 
 #define MAX_KEY 100
 
@@ -14,33 +16,41 @@ namespace hsbrdg
 	private:
 		struct user
 		{
-			std::string login{};
-			std::string password{};
-			struct user* next{};
+			std::string m_login{};
+			std::string m_password{};
+			struct user* m_next{};
 
-			user(std::string s)
+			user(std::string login, std::string password)
 				: 
-				login(s)
-			{
-			}
+				m_login(login),
+				m_password(password)
+			{}
 		};
 
 		user _user;
 
-		uint8_t size_ht{ 0 };
+		uint8_t current_size_ht{ 0 };
 		static constexpr uint8_t max_size_ht{ MAX_KEY };
 
-		user* ht[];
+		std::vector<user*> ht;
 
 	public:
-		void test_hash_func();
+		void test_hash_func(void);
+
+	
+		user input_user_data(void);
+
 		uint8_t hash_func(std::string key);
+		void insert(std::string login, std::string password);
 
 	public:
-		hashtable(std::string s)
+		hashtable(std::string login, std::string password)
 			:
-			_user(s)
+			_user(login, password)
 		{
+			ht.reserve(MAX_KEY);
+
+
 		}
 			
 		~hashtable() = default;
