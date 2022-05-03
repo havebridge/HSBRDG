@@ -1,7 +1,6 @@
 #include "hashtable.h"
 
 
-void hsbrdg::hashtable::test_hash_func() 
-{
-	std::cout << static_cast<int>(hash_func(hashtable::_user.m_login)) << '\n';
-}
+//void test_hash_func(void);
+
+//void test_insert_func(void);
