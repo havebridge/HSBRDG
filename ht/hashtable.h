@@ -4,57 +4,67 @@
 #include <cstdint>
 #include <string>
 #include <iostream>
-#include <vector>
 #include <cassert>
 
 #define MAX_KEY 100
 
 namespace hsbrdg
 {
+	struct user
+	{
+		std::string m_login{};
+		std::string m_password{};
+		struct user* m_next{};
+
+		user() = default;
+
+		user(std::string login, std::string password)
+			:
+			m_login(login),
+			m_password(password)
+		{
+			m_next = nullptr;
+		}
+	};
+
 	class hashtable 
 	{
 	private:
-		struct user
-		{
-			std::string m_login{};
-			std::string m_password{};
-			struct user* m_next{};
-
-			user(std::string login, std::string password)
-				: 
-				m_login(login),
-				m_password(password)
-			{}
-		};
-
-		user _user;
-
 		uint8_t current_size_ht{ 0 };
 		static constexpr uint8_t max_size_ht{ MAX_KEY };
 
-		std::vector<user*> ht;
+		user* ht[];
 
 	public:
-		void test_hash_func(void);
+		friend std::istream& operator>> (std::istream& in, struct user& _user);
 
-	
-		user input_user_data(void);
+		//void test_hash_func(void);
+		//void test_insert_func(void);
 
 		uint8_t hash_func(std::string key);
-		void insert(std::string login, std::string password);
+		void insert(void);
 
 	public:
-		hashtable(std::string login, std::string password)
-			:
-			_user(login, password)
+		hashtable() = default;
+
+		hashtable()
 		{
-			ht.reserve(MAX_KEY);
-
-
+			//hash table initialized to zero
 		}
-			
+
 		~hashtable() = default;
 	};
+
+	std::istream& operator>> (std::istream& in, struct user& _user)
+	{
+		std::cout << "login: ";
+		in >> _user.m_login;
+
+		std::cout << "password: ";
+		in >> _user.m_password;
+
+		return in;
+	}
 };
 
 #endif
