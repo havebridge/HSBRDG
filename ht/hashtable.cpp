@@ -1,5 +1,6 @@
 #include "hashtable.h"
 
+
 uint8_t hsbrdg::hashtable::hash_func(std::string key)
 {
 	uint8_t hash_val = 0;
@@ -16,12 +17,30 @@ void hsbrdg::hashtable::insert(void)
 {
 	hsbrdg::user data;
 	
-	std::cin >> data;
+	//std::cin >> data;
 
 	uint8_t slot = hsbrdg::hashtable::hash_func(data.m_login);
 
 	if (ht[slot] == nullptr)
 	{
-		//TODO: smart pointers
+		ht[slot]->m_login = data.m_login;
+		ht[slot]->m_password = data.m_password;
+		ht[slot]->m_next = nullptr;
+
+		return;
 	}
+
+	hsbrdg::user* tmp = ht[slot];
+	hsbrdg::user* prev = ht[slot];
+
+	while (tmp->m_next != nullptr)
+	{
+		prev = tmp;
+		tmp = prev->m_next;
+	}
+
+	ht[slot] = prev;
+	ht[slot]->m_next->m_login = data.m_login;
+	ht[slot]->m_next->m_password = data.m_password;
+	ht[slot]->m_next->m_next = nullptr;
 }
