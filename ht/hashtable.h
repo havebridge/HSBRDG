@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <cassert>
+#include <memory>
 
 #define MAX_KEY 100
 
@@ -16,6 +17,10 @@ namespace hsbrdg
 		std::string m_password{};
 		struct user* m_next{};
 
+	public:
+		friend std::istream& operator>> (std::istream& in, user& _user);
+
+	public:
 		user() = default;
 
 		user(std::string login, std::string password)
@@ -27,35 +32,40 @@ namespace hsbrdg
 		}
 	};
 
+
 	class hashtable 
 	{
 	private:
-		uint8_t current_size_ht{ 0 };
-		static constexpr uint8_t max_size_ht{ MAX_KEY };
-
-		user* ht[];
+		user** ht;
 
 	public:
-		friend std::istream& operator>> (std::istream& in, struct user& _user);
+		friend std::ostream& operator<< (std::ostream& out, hsbrdg::hashtable& _ht);
 
 		//void test_hash_func(void);
 		//void test_insert_func(void);
+		//void test_print_func(void);
 
 		uint8_t hash_func(std::string key);
 		void insert(void);
 
 	public:
-		hashtable() = default;
-
 		hashtable()
 		{
-			//hash table initialized to zero
+			ht = (new user*[MAX_KEY]);
+
+			for (int i = 1; i != MAX_KEY; ++i)
+			{
+				ht[i] = nullptr;
+			}
 		}
 
-		~hashtable() = default;
+		~hashtable()
+		{
+			delete ht;
+		}
 	};
 
-	std::istream& operator>> (std::istream& in, struct user& _user)
+	std::istream& operator>> (std::istream& in, hsbrdg::user& _user)
 	{
 		std::cout << "login: ";
 		in >> _user.m_login;
@@ -64,6 +74,33 @@ namespace hsbrdg
 		in >> _user.m_password;
 
 		return in;
+	}
+
+	std::ostream& operator<< (std::ostream& out, hsbrdg::hashtable& _ht)
+	{
+		for (int slot = 0; slot != MAX_KEY; ++slot)
+		{
+			user* tmp = _ht.ht[slot];
+
+			if (tmp == nullptr)
+			{
+				continue;
+			}
+
+			for (;;)
+			{
+				out << tmp->m_login << ' ' << tmp->m_password;
+
+				if (tmp->m_next == nullptr)
+				{
+					break;
+				}
+
+				tmp = tmp->m_next;
+			}
+		}
+
+		return out;
 	}
 };
 
