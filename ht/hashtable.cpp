@@ -1,5 +1,13 @@
 #include "hashtable.h"
 
+void hsbrdg::hashtable::get_input(hsbrdg::user& _user)
+{
+	std::cout << "login: ";
+	std::cin >> _user.m_login;
+
+	std::cout << "password: ";
+	std::cin >> _user.m_password;
+}
 
 uint8_t hsbrdg::hashtable::hash_func(std::string key)
 {
@@ -15,11 +23,11 @@ uint8_t hsbrdg::hashtable::hash_func(std::string key)
 
 void hsbrdg::hashtable::insert(void)
 {
-	hsbrdg::user data;
+	user data;
 	
-	//std::cin >> data;
+	get_input(data);
 
-	uint8_t slot = hsbrdg::hashtable::hash_func(data.m_login);
+	uint8_t slot = hash_func(data.m_login);
 
 	if (ht[slot] == nullptr)
 	{
@@ -30,8 +38,8 @@ void hsbrdg::hashtable::insert(void)
 		return;
 	}
 
-	hsbrdg::user* tmp = ht[slot];
-	hsbrdg::user* prev = ht[slot];
+	user* tmp = ht[slot];
+	user* prev = (new user[sizeof(user)]);
 
 	while (tmp->m_next != nullptr)
 	{
@@ -43,4 +51,29 @@ void hsbrdg::hashtable::insert(void)
 	ht[slot]->m_next->m_login = data.m_login;
 	ht[slot]->m_next->m_password = data.m_password;
 	ht[slot]->m_next->m_next = nullptr;
+}
+
+void hsbrdg::hashtable::print_ht(void)
+{
+	for (int slot = 0; slot != MAX_KEY; ++slot)
+	{
+		user* tmp = ht[slot];
+
+		if (tmp == nullptr)
+		{
+			continue;
+		}
+
+		for (;;)
+		{
+			std::cout << tmp->m_login << ' ' << tmp->m_password << '\n';
+
+			if (tmp->m_next == nullptr)
+			{
+				break;
+			}
+
+			tmp = tmp->m_next;
+		}
+	}
 }
