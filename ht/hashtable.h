@@ -8,7 +8,6 @@
 
 #if 0
 #define MAX_KEY 5
-
 #endif // DEBUG
 
 #if 1
@@ -37,11 +36,13 @@ namespace hsbrdg
 	public:
 		void test_hash_func(void);
 		void test_insert_func(void);
+		void test_delete_func(void);
 		void test_print_func(void);
 
 		void get_input(user&);
-		uint8_t hash_func(std::string key);
-		void insert(void);
+		uint8_t hash_func(std::string login);
+		void insert_ht(void);
+		void delete_ht(std::string login);
 		void print_ht(void);
 
 	public:

@@ -21,7 +21,7 @@ uint8_t hsbrdg::hashtable::hash_func(std::string key)
 	return hash_val % MAX_KEY;
 }
 
-void hsbrdg::hashtable::insert(void)
+void hsbrdg::hashtable::insert_ht(void)
 {
 	user data;
 	
@@ -29,7 +29,7 @@ void hsbrdg::hashtable::insert(void)
 
 	uint8_t slot = hash_func(data.m_login);
 
-	if (ht[slot]->m_login == "" && ht[slot]->m_password == "" && ht[slot]->m_next == nullptr)
+	if (ht[slot]->m_login == "" && ht[slot]->m_next == nullptr)
 	{
 		ht[slot]->m_login = data.m_login;
 		ht[slot]->m_password = data.m_password;
@@ -41,7 +41,7 @@ void hsbrdg::hashtable::insert(void)
 	user* tmp = ht[slot];
 	user* prev = tmp;
 
-	while (tmp != NULL)
+	while (tmp != nullptr)
 	{
 		prev = tmp;
 		tmp = prev->m_next;
@@ -53,6 +53,32 @@ void hsbrdg::hashtable::insert(void)
 	prev->m_next->m_next = nullptr;
 
 	//delete prev->m_next;
+}
+
+void hsbrdg::hashtable::delete_ht(std::string login)
+{
+	uint8_t slot = hash_func(login);
+
+	if (ht[slot]->m_login == "" && ht[slot]->m_next == nullptr)
+	{
+		ht[slot] = nullptr;
+		delete ht[slot];
+
+		return;
+	}
+
+	user* tmp = ht[slot];
+	user* prev = tmp;
+
+	while (tmp->m_login != login)
+	{
+		prev = tmp;
+		tmp = prev->m_next;
+	}
+
+	prev->m_next = nullptr;
+	tmp = nullptr;
+	delete prev->m_next;
 }
 
 void hsbrdg::hashtable::print_ht(void)

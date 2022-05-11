@@ -11,5 +11,10 @@ int main(int argc, char** argv)
 	_hashtable.test_insert_func();
 
 	_hashtable.test_print_func();
+
+	_hashtable.test_delete_func();
+
+	_hashtable.test_print_func();
+
 	return 0;
 }
