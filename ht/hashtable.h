@@ -6,7 +6,14 @@
 #include <iostream>
 #include <memory>
 
+#if 0
+#define MAX_KEY 5
+
+#endif // DEBUG
+
+#if 1
 #define MAX_KEY 100
+#endif
 
 namespace hsbrdg
 {
@@ -18,21 +25,14 @@ namespace hsbrdg
 
 	public:
 		user() = default;
-
-		user(std::string login, std::string password)
-			:
-			m_login(login),
-			m_password(password)
-		{
-			m_next = nullptr;
-		}
+		~user() = default;
 	};
 
 
 	class hashtable 
 	{
 	private:
-		user** ht;
+		user* ht[MAX_KEY];
 
 	public:
 		void test_hash_func(void);
@@ -47,17 +47,21 @@ namespace hsbrdg
 	public:
 		hashtable()
 		{
-			ht = (new user*[MAX_KEY]);
-
-			for (int i = 1; i != MAX_KEY; ++i)
+			for (int slot = 0; slot != MAX_KEY; ++slot)
 			{
-				ht[i] = nullptr;
+				ht[slot] = new user;
+				ht[slot]->m_login = "";
+				ht[slot]->m_password = "";
+				ht[slot]->m_next = nullptr;
 			}
 		}
 
 		~hashtable()
 		{
-			delete ht;
+			for (int slot = 0; slot != MAX_KEY; ++slot)
+			{
+				delete ht[slot];
+			}
 		}
 	};
 };

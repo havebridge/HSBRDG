@@ -7,8 +7,7 @@ int main(int argc, char** argv)
 
 	hsbrdg::hashtable _hashtable;
 
-	_hashtable.test_hash_func();
-
+	_hashtable.test_insert_func();
 	_hashtable.test_insert_func();
 
 	_hashtable.test_print_func();
