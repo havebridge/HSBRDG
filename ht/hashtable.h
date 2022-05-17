@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <random>
 
 #if 1
 #define SIZE 5
@@ -80,8 +81,19 @@ namespace hsbrdg
 
 		uint8_t hash_func(const U& login) const 
 		{
-			return 5;
-			//return reinterpret_cast<uint8_t>(login) % tableSize;
+			uint8_t hashValue{ 0 };
+			
+			std::random_device dev;
+			std::mt19937 rng(dev());
+			std::uniform_int_distribution<std::mt19937::result_type> dist(1, 100);
+
+			for (auto it = login.begin(); it != login.end(); ++it)
+			{
+				hashValue += sizeof(login) + dist(rng);
+			}
+
+
+			return hashValue % tableSize;
 		}
 
 		void put(void)
