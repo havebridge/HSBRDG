@@ -29,10 +29,10 @@ namespace hsbrdg
 		user* _next{};
 
 	public:
-		template<typename U, typename T>
-		friend std::istream& operator>>(std::istream& in, user<U, T>& _user);
-		template<typename U, typename T>
-		friend std::ostream& operator<<(std::ostream& in, const user<U, T>& _user);
+		template<typename T, typename U>
+		friend std::istream& operator>>(std::istream& in, user<T, U>& _user);
+		template<typename T, typename U>
+		friend std::ostream& operator<<(std::ostream& in, const user<T, U>& _user);
 
 		user(const T& login, const U& password)
 			:
@@ -79,7 +79,7 @@ namespace hsbrdg
 	public:
 		friend user;
 
-		uint8_t hash_func(const U& login) const 
+		uint8_t hash_func(const T& login) const 
 		{
 			uint8_t hashValue{ 0 };
 			
@@ -101,27 +101,28 @@ namespace hsbrdg
 			
 		}
 
-		void remove(U login)
+		void remove(T login)
 		{
 
 		}
 
-		user<U, T>* get(U login)
+		user<T, U>* get(T login)
 		{
 
 		}
 
 	
-		void test_hash_func(void)
+		int test_hash_func(void)
 		{
 			user<T, U> _user;
 
 			std::cin >> _user;
 
-			std::cout << static_cast<int>(hash_func(_user.getLogin())) << '\n'; // uint8_t doesn`t work with ASCII
+			return static_cast<int>(hash_func(_user.getLogin())); // uint8_t doesn`t work with ASCII
 		}
 
-		//void test_hash_func(void);
+		
+
 		void test_put_func(void);
 		void test_remove_func(void);
 
