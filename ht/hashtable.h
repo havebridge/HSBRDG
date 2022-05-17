@@ -6,18 +6,14 @@
 #include <memory>
 #include <random>
 
-#if 1
-#define SIZE 5
-#endif // For Overloading operator<<
-
-
 
 namespace hsbrdg
 {
-	template <typename T, typename U> struct user;
+	template <typename T, typename U> class user;
+	template <typename T, typename U, uint8_t tableSize> class hashtable;
 
-	template <typename T, typename U> std::istream& operator>>(std::istream& in, user<T, U>& lhs);
-	template <typename T, typename U> std::ostream& operator<<(std::ostream& out, const user<T, U>& lhs);
+	template <typename T, typename U> std::istream& operator>>(std::istream& in, user<T, U>& _user);
+	template <typename T, typename U, uint8_t tableSize> std::ostream& operator<<(std::ostream& out, const hashtable<T, U, tableSize>& _hashtable);
 
 
 	template<typename T, typename U>
@@ -31,8 +27,6 @@ namespace hsbrdg
 	public:
 		template<typename T, typename U>
 		friend std::istream& operator>>(std::istream& in, user<T, U>& _user);
-		template<typename T, typename U>
-		friend std::ostream& operator<<(std::ostream& in, const user<T, U>& _user);
 
 		user(const T& login, const U& password)
 			:
@@ -79,6 +73,9 @@ namespace hsbrdg
 	public:
 		friend user;
 
+		template<typename T, typename U, uint8_t tableSize>
+		friend std::ostream& operator<<(std::ostream& in, const hashtable<T, U, tableSize>& _hashtable);
+
 		uint8_t hash_func(const T& login) const 
 		{
 			uint8_t hashValue{ 0 };
@@ -96,9 +93,28 @@ namespace hsbrdg
 			return hashValue % tableSize;
 		}
 
-		void put(void)
+		void put(const T& login, const U& password)
 		{
-			
+			uint8_t hashVal = hash_func(login);
+			user<T, U>* entry = ht[hashVal];
+
+			if (entry == NULL)
+			{
+				entry = new user<T, U>(login, password);
+				ht[hashVal] = entry;
+			}
+			else
+			{
+				user<T, U>* prev = NULL;
+
+				while (entry->getNext() != NULL && entry->getLogin() != login)
+				{
+					prev = entry;
+					entry = entry->getNext();
+				}
+
+				entry = new user<T, U>(login, password);
+			}
 		}
 
 		void remove(T login)
@@ -151,7 +167,7 @@ namespace hsbrdg
 		}
 	};
 
-	template<typename T, typename U >
+	template<typename T, typename U>
 	std::istream& operator>>(std::istream& in, user<T, U>& _user)
 	{
 		std::cout << "login: ";
@@ -163,30 +179,34 @@ namespace hsbrdg
 		return in;
 	}
 
-	template<typename T, typename U>
-	std::ostream& operator<<(std::ostream& out, const user<T, U>& _user)
+	template<typename T, typename U, uint8_t tableSize>
+	std::ostream& operator<<(std::ostream& out, const hashtable<T, U, tableSize>& _hashtable)
 	{
-		for (uint8_t bucket = 0; bucket != SIZE; ++bucket)
+		for (uint8_t bucket = 0; bucket != tableSize; ++bucket)
 		{
+			user<T, U>* _user = _hashtable.ht[bucket];
+
 			if (_user == NULL)
 			{
 				continue;
 			}
 
-			std::cout << "slot[ " << bucket << " ] = ";
+			std::cout << "slot[ " << static_cast<int>(bucket) << " ] = ";
 
 			for (;;)
 			{
-				out << _user._login << ' ' << _user._password;
+				out << _user->getLogin() << ' ' << _user->getPassword();
 
-				if (_user._next == NULL)
+				if (_user->getNext() == NULL)
 				{
 					break;
 				}
 
-				_user = _user.getNext();
+				_user = _user->getNext();
 			}
 			std::cout << '\n';
 		}
+
+		return out;
 	}
 };
