@@ -2,16 +2,22 @@
 
 using namespace hsbrdg;
 
-//#define TEST 1
+//#define TEST_HASH 1
+//#define TEST_PUT 1
 
 int main(int argc, char** argv)
 {
 	(void)argc;
 	(void)argv;
 
-	hashtable<std::string, std::string, 2> _hashtable;
+	hashtable<std::string, std::string, 222> _hashtable;
 
-#if TEST
+#if TEST_PUT
+	_hashtable.put("me", "111");
+	std::cout << _hashtable;
+#endif
+
+#if TEST_HASH
 	std::vector<std::string> same;
 
 	for (int i = 0; i < 5; ++i)
