@@ -118,6 +118,7 @@ namespace hsbrdg
 		void remove(const T& login, const U& password)
 		{
 			bool isRemoved = false;
+
 			user<T, U>* tmp = NULL;
 			user<T, U>* prev = NULL;
 
@@ -177,7 +178,7 @@ namespace hsbrdg
 						count++;
 					}
 
-					int count1 = 0;
+					int size = 0;
 
 					for (int i = 1; i < count; ++i)
 					{
@@ -186,28 +187,28 @@ namespace hsbrdg
 							if (sameLogins[i]->getLogin() == sameLogins[j]->getLogin())
 							{
 								passwords.push_back(sameLogins[i]);
-								count1++;
+								size++;
 							}
 						}
 					}
 
-					user<T, U>* log1 = ht[bucket];
-					user<T, U>* prevlog1 = NULL;
-					while (passwords[count1]->getPassword() != password)
+					user<T, U>* samePassword = ht[bucket];
+					user<T, U>* prevSamePassword = NULL;
+					while (passwords[size]->getPassword() != password)
 					{
-						prevlog1 = log1;
-						log1 = log1->getNext();
+						prevSamePassword = samePassword;
+						samePassword = samePassword->getNext();
 					}
 
-					if (prevlog1 == NULL)
+					if (prevSamePassword == NULL)
 					{
-						ht[bucket] = log1->getNext();
-						delete log1;
+						ht[bucket] = samePassword->getNext();
+						delete samePassword;
 					}
 					else
 					{
-						prevlog1->setNext(log1->getNext());
-						delete log1;
+						prevSamePassword->setNext(samePassword->getNext());
+						delete samePassword;
 					}
 				}
 			}
