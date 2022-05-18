@@ -71,8 +71,6 @@ namespace hsbrdg
 		user<T, U>* ht[tableSize];
 
 	public:
-		friend user;
-
 		template<typename T, typename U, uint8_t tableSize>
 		friend std::ostream& operator<<(std::ostream& in, const hashtable<T, U, tableSize>& _hashtable);
 
@@ -97,34 +95,126 @@ namespace hsbrdg
 		{
 			uint8_t hashVal = hash_func(login);
 			user<T, U>* entry = ht[hashVal];
+			user<T, U>* prev = NULL;
 
-			if (entry == NULL)
+			while (entry != NULL)
+			{
+				prev = entry;
+				entry = entry->getNext();
+			}
+
+			if (prev == NULL)
 			{
 				entry = new user<T, U>(login, password);
 				ht[hashVal] = entry;
 			}
 			else
 			{
-				user<T, U>* prev = NULL;
-
-				while (entry->getNext() != NULL && entry->getLogin() != login)
-				{
-					prev = entry;
-					entry = entry->getNext();
-				}
-
 				entry = new user<T, U>(login, password);
+				prev->setNext(entry);
 			}
 		}
 
-		void remove(T login)
+		void remove(const T& login, const U& password)
 		{
+			bool isRemoved = false;
+			user<T, U>* tmp = NULL;
+			user<T, U>* prev = NULL;
 
+			user<T, U>* log = NULL;
+			std::vector<user<T, U>*> sameLogins;
+			std::vector<user<T, U>*> passwords;
+
+			for (uint8_t bucket = 0; bucket != tableSize; ++bucket)
+			{
+				isRemoved = false;
+
+				tmp = ht[bucket];
+
+				if (tmp == NULL)
+				{
+					continue;
+				}
+				else
+				{
+					while (tmp->getLogin() != login)
+					{
+						if (tmp->getPassword() == password)
+						{
+							break;
+						}
+
+						prev = tmp;
+						tmp = tmp->getNext();
+					}
+
+					if (prev == NULL)
+					{
+						if (tmp->getLogin() == login && tmp->getPassword() == password)
+						{
+							ht[bucket] = tmp->getNext();
+							delete tmp;
+							isRemoved = true;
+						}
+					}
+					else
+					{
+						prev->setNext(tmp->getNext());
+						delete tmp;
+						isRemoved = true;
+					}
+				}
+
+				if (isRemoved == false)
+				{
+					log = ht[bucket];
+					int count = 0;
+
+					while (log != NULL && log->getLogin() == login)
+					{
+						sameLogins.push_back(log);
+						log = log->getNext();
+						count++;
+					}
+
+					int count1 = 0;
+
+					for (int i = 1; i < count; ++i)
+					{
+						for (int j = 0; j < i; ++j)
+						{
+							if (sameLogins[i]->getLogin() == sameLogins[j]->getLogin())
+							{
+								passwords.push_back(sameLogins[i]);
+								count1++;
+							}
+						}
+					}
+
+					user<T, U>* log1 = ht[bucket];
+					user<T, U>* prevlog1 = NULL;
+					while (passwords[count1]->getPassword() != password)
+					{
+						prevlog1 = log1;
+						log1 = log1->getNext();
+					}
+
+					if (prevlog1 == NULL)
+					{
+						ht[bucket] = log1->getNext();
+						delete log1;
+					}
+					else
+					{
+						prevlog1->setNext(log1->getNext());
+						delete log1;
+					}
+				}
+			}
 		}
 
-		user<T, U>* get(T login)
+		user<T, U>* get(const T& login) const
 		{
-
 		}
 
 	
@@ -195,7 +285,7 @@ namespace hsbrdg
 
 			for (;;)
 			{
-				out << _user->getLogin() << ' ' << _user->getPassword();
+				out << "login: " << _user->getLogin() << ' '<< "password: " << _user->getPassword() << ' ';
 
 				if (_user->getNext() == NULL)
 				{
