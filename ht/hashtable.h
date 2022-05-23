@@ -9,11 +9,11 @@
 
 namespace hsbrdg
 {
-	template <typename T, typename U> class user;
-	template <typename T, typename U, uint8_t tableSize> class hashtable;
+	//template <typename T, typename U> class user;
+	//template <typename T, typename U, uint8_t tableSize> class hashtable;
 
-	template <typename T, typename U> std::istream& operator>>(std::istream& in, user<T, U>& _user);
-	template <typename T, typename U, uint8_t tableSize> std::ostream& operator<<(std::ostream& out, const hashtable<T, U, tableSize>& _hashtable);
+	//template <typename T, typename U> std::istream& operator>>(std::istream& in, user<T, U>& _user);
+	//template <typename T, typename U, uint8_t tableSize> std::ostream& operator<<(std::ostream& out, const hashtable<T, U, tableSize>& _hashtable);
 
 
 	template<typename T, typename U>
@@ -122,10 +122,6 @@ namespace hsbrdg
 			user<T, U>* tmp = NULL;
 			user<T, U>* prev = NULL;
 
-			user<T, U>* log = NULL;
-			std::vector<user<T, U>*> sameLogins;
-			std::vector<user<T, U>*> passwords;
-
 			for (uint8_t bucket = 0; bucket != tableSize; ++bucket)
 			{
 				isRemoved = false;
@@ -149,14 +145,15 @@ namespace hsbrdg
 						tmp = tmp->getNext();
 					}
 
-					if (prev == NULL)
+					if (tmp->getLogin() == login && tmp->getPassword() == password)
 					{
-						if (tmp->getLogin() == login && tmp->getPassword() == password)
-						{
-							ht[bucket] = tmp->getNext();
-							delete tmp;
-							isRemoved = true;
-						}
+						ht[bucket] = tmp->getNext();
+						delete tmp;
+						isRemoved = true;
+					}
+					else if(tmp->getNext()->getLogin() == login)
+					{
+						isRemoved = false;
 					}
 					else
 					{
@@ -168,33 +165,23 @@ namespace hsbrdg
 
 				if (isRemoved == false)
 				{
-					log = ht[bucket];
 					int count = 0;
+					std::vector<user<T, U>*> sameLogins;
 
-					while (log != NULL && log->getLogin() == login)
+					for (auto i = ht[bucket]; i != NULL; i = i->getNext())
 					{
-						sameLogins.push_back(log);
-						log = log->getNext();
-						count++;
-					}
-
-					int size = 0;
-
-					for (int i = 1; i < count; ++i)
-					{
-						for (int j = 0; j < i; ++j)
+						if (i->getLogin() == login)
 						{
-							if (sameLogins[i]->getLogin() == sameLogins[j]->getLogin())
-							{
-								passwords.push_back(sameLogins[i]);
-								size++;
-							}
+							sameLogins.push_back(i);
+							count++;
 						}
 					}
 
 					user<T, U>* samePassword = ht[bucket];
 					user<T, U>* prevSamePassword = NULL;
-					while (passwords[size]->getPassword() != password)
+					int i = 0;
+
+					while (sameLogins[i++]->getPassword() != password)
 					{
 						prevSamePassword = samePassword;
 						samePassword = samePassword->getNext();
@@ -286,7 +273,7 @@ namespace hsbrdg
 
 			for (;;)
 			{
-				out << "login: " << _user->getLogin() << ' '<< "password: " << _user->getPassword() << ' ';
+				out << _user->getLogin() << ' ' << _user->getPassword() << ' ';
 
 				if (_user->getNext() == NULL)
 				{
