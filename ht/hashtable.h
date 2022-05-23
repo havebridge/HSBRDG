@@ -9,13 +9,6 @@
 
 namespace hsbrdg
 {
-	//template <typename T, typename U> class user;
-	//template <typename T, typename U, uint8_t tableSize> class hashtable;
-
-	//template <typename T, typename U> std::istream& operator>>(std::istream& in, user<T, U>& _user);
-	//template <typename T, typename U, uint8_t tableSize> std::ostream& operator<<(std::ostream& out, const hashtable<T, U, tableSize>& _hashtable);
-
-
 	template<typename T, typename U>
 	class user
 	{
