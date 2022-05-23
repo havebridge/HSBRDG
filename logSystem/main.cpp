@@ -2,7 +2,7 @@
 
 using namespace hsbrdg;
 
-//#define TEST_HASH 1
+#define TEST_HASH 0
 #define TEST_PUT 1
 
 int main(int argc, char** argv)
@@ -13,11 +13,10 @@ int main(int argc, char** argv)
 	hashtable<std::string, std::string, 1> _hashtable;
 
 #if TEST_PUT
-	_hashtable.put("login", "password111");
-	_hashtable.put("name", "qwerty");
-	_hashtable.put("dayn", "me");
-	_hashtable.remove("name", "qwerty"); 
-	_hashtable.remove("login", "password111");
+	_hashtable.put("q", "1");
+	_hashtable.put("q", "2");
+	_hashtable.put("q", "3");
+	_hashtable.remove("q", "1"); 
 	std::cout << _hashtable;
 #endif
 
