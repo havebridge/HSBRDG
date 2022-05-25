@@ -117,17 +117,22 @@ namespace hsbrdg
 
 			for (uint8_t bucket = 0; bucket != tableSize; ++bucket)
 			{
-				isRemoved = false;
-
-				tmp = ht[bucket];
-
-				if (tmp == NULL)
+				if (ht[bucket] == NULL)
 				{
 					continue;
 				}
 				else
 				{
-					while (tmp->getLogin() != login)
+					if (isRemoved == true)
+					{
+						break;
+					}
+
+					isRemoved = false;
+
+					tmp = ht[bucket];
+
+					while (tmp->getLogin() != login && tmp->getNext() != NULL)
 					{
 						if (tmp->getPassword() == password)
 						{
@@ -138,15 +143,14 @@ namespace hsbrdg
 						tmp = tmp->getNext();
 					}
 
-					if (tmp->getLogin() == login && tmp->getPassword() == password)
+					if (prev == NULL)
 					{
-						ht[bucket] = tmp->getNext();
-						delete tmp;
-						isRemoved = true;
-					}
-					else if(tmp->getNext()->getLogin() == login)
-					{
-						isRemoved = false;
+						if (tmp->getLogin() == login && tmp->getPassword() == password)
+						{
+							ht[bucket] = tmp->getNext();
+							delete tmp;
+							isRemoved = true;
+						}
 					}
 					else
 					{
@@ -158,37 +162,39 @@ namespace hsbrdg
 
 				if (isRemoved == false)
 				{
+					bool isSameLogins = false;
 					int count = 0;
 					std::vector<user<T, U>*> sameLogins;
 
 					for (auto i = ht[bucket]; i != NULL; i = i->getNext())
 					{
-						if (i->getLogin() == login)
+						if (i->getLogin() == login && i->getPassword() == password)
 						{
 							sameLogins.push_back(i);
-							count++;
+							isSameLogins = true;
 						}
 					}
 
-					user<T, U>* samePassword = ht[bucket];
-					user<T, U>* prevSamePassword = NULL;
-					int i = 0;
+					if (isSameLogins == true)
+					{
+						user<T, U>* entity = ht[bucket];
+						user<T, U>* prevEntity = NULL;
 
-					while (sameLogins[i++]->getPassword() != password)
-					{
-						prevSamePassword = samePassword;
-						samePassword = samePassword->getNext();
-					}
-
-					if (prevSamePassword == NULL)
-					{
-						ht[bucket] = samePassword->getNext();
-						delete samePassword;
-					}
-					else
-					{
-						prevSamePassword->setNext(samePassword->getNext());
-						delete samePassword;
+						while (entity->getPassword() != sameLogins[0]->getPassword())
+						{
+							prevEntity = entity;
+							entity = entity->getNext();
+						}
+						if (prevEntity == NULL)
+						{
+							ht[bucket] = entity->getNext();
+							delete entity;
+						}
+						else
+						{
+							prevEntity->setNext(entity->getNext());
+							delete entity;
+						}
 					}
 				}
 			}
@@ -207,11 +213,6 @@ namespace hsbrdg
 
 			return static_cast<int>(hash_func(_user.getLogin())); // uint8_t doesn`t work with ASCII
 		}
-
-		
-
-		void test_put_func(void);
-		void test_remove_func(void);
 
 	public:
 		hashtable()
