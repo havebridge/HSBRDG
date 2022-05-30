@@ -163,7 +163,6 @@ namespace hsbrdg
 				if (isRemoved == false)
 				{
 					bool isSameLogins = false;
-					int count = 0;
 					std::vector<user<T, U>*> sameLogins;
 
 					for (auto i = ht[bucket]; i != NULL; i = i->getNext())
@@ -200,8 +199,91 @@ namespace hsbrdg
 			}
 		}
 
-		user<T, U>* get(const T& login) const
+		user<T, U>* get(const T& login, const U& password) const
 		{
+			bool isFounded = false;
+
+			user<T, U>* tmp = NULL;
+			user<T, U>* prev = NULL;
+
+			for (uint8_t bucket = 0; bucket != tableSize; ++bucket)
+			{
+				if (ht[bucket] == NULL)
+				{
+					continue;
+				}
+				else
+				{
+					if (isFounded == true)
+					{
+						break;
+					}
+
+					isFounded = false;
+
+					tmp = ht[bucket];
+
+					while (tmp->getLogin() != login && tmp->getNext() != NULL)
+					{
+						if (tmp->getPassword() == password)
+						{
+							break;
+						}
+
+						prev = tmp;
+						tmp = tmp->getNext();
+					}
+
+					if (prev == NULL)
+					{
+						if (tmp->getLogin() == login && tmp->getPassword() == password)
+						{
+							isFounded = true;
+							return tmp;
+						}
+					}
+					else
+					{
+						isFounded = true;
+						return tmp;
+					}
+				}
+
+				if (isFounded == false)
+				{
+					bool isSameLogins = false;
+					std::vector<user<T, U>*> sameLogins;
+
+					for (auto i = ht[bucket]; i != NULL; i = i->getNext())
+					{
+						if (i->getLogin() == login && i->getPassword() == password)
+						{
+							sameLogins.push_back(i);
+							isSameLogins = true;
+						}
+					}
+
+					if (isSameLogins == true)
+					{
+						user<T, U>* entity = ht[bucket];
+						user<T, U>* prevEntity = NULL;
+
+						while (entity->getPassword() != sameLogins[0]->getPassword())
+						{
+							prevEntity = entity;
+							entity = entity->getNext();
+						}
+						if (prevEntity == NULL)
+						{
+							return entity;
+						}
+						else
+						{
+							return entity;
+						}
+					}
+				}
+			}
 		}
 
 	
