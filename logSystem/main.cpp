@@ -4,8 +4,8 @@ using namespace hsbrdg;
 
 #define TEST_PUT 1
 #define TEST_REMOVE 0
-#define TEST_GET 1
-#define TEST_PRINT 0
+#define TEST_GET 0
+#define TEST_PRINT 1
 #define TEST_HASH 0
 
 
@@ -17,15 +17,28 @@ int main(int argc, char** argv)
 	hashtable<std::string, std::string, 100> _hashtable;
 
 #if TEST_PUT
-	_hashtable.put("daaaaaaaaaaaaaaaaaaa", "af");
-	_hashtable.put("o", "meow");
-	_hashtable.put("cat", "meow");
-	_hashtable.put("g", "1007");
-	_hashtable.put("1", "inside");
+	const std::string CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
+
+	std::random_device random_device;
+	std::mt19937 generator(random_device());
+	std::uniform_int_distribution<> distribution(0, CHARACTERS.size() - 1);
+
+	std::string login;
+	std::string password;
+
+	for (std::size_t i = 0; i != 5; ++i)
+	{
+		for (std::size_t j = 0; j != 4; ++j)
+		{
+			login += CHARACTERS[distribution(generator)];
+			password += CHARACTERS[distribution(generator)];
+		}
+		_hashtable.put(login, password);
+	}
 #endif
 
 #if TEST_REMOVE
-	_hashtable.remove("g", "1007");
+	//TODO
 #endif
 
 #if TEST_PRINT
@@ -34,7 +47,7 @@ int main(int argc, char** argv)
 
 #if TEST_GET
 	user<std::string, std::string>* getTest = _hashtable.get("g", "1007");
-	std::cout <<  getTest->getLogin() << ' ' << getTest->getPassword() << '\n';
+	std::cout << getTest->getLogin() << ' ' << getTest->getPassword() << '\n';
 #endif
 
 #if TEST_HASH
@@ -59,6 +72,6 @@ int main(int argc, char** argv)
 	}
 	std::cout << k << std::endl;
 #endif
-	
+
 	return 0;
 }
