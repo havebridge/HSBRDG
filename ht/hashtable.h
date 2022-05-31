@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <random>
+#include <ctime>
 
 
 namespace hsbrdg
@@ -117,17 +118,17 @@ namespace hsbrdg
 
 			for (uint8_t bucket = 0; bucket != tableSize; ++bucket)
 			{
+				if (isRemoved == true)
+				{
+					break;
+				}
+
 				if (ht[bucket] == NULL)
 				{
 					continue;
 				}
 				else
 				{
-					if (isRemoved == true)
-					{
-						break;
-					}
-
 					isRemoved = false;
 
 					tmp = ht[bucket];
@@ -154,9 +155,12 @@ namespace hsbrdg
 					}
 					else
 					{
-						prev->setNext(tmp->getNext());
-						delete tmp;
-						isRemoved = true;
+						if (tmp->getLogin() == login && tmp->getPassword() == password)
+						{
+							prev->setNext(tmp->getNext());
+							delete tmp;
+							isRemoved = true;
+						}
 					}
 				}
 
@@ -234,19 +238,12 @@ namespace hsbrdg
 						tmp = tmp->getNext();
 					}
 
-					if (prev == NULL)
-					{
-						if (tmp->getLogin() == login && tmp->getPassword() == password)
-						{
-							isFounded = true;
-							return tmp;
-						}
-					}
-					else
+					if (tmp->getLogin() == login && tmp->getPassword() == password)
 					{
 						isFounded = true;
 						return tmp;
 					}
+
 				}
 
 				if (isFounded == false)
@@ -258,28 +255,7 @@ namespace hsbrdg
 					{
 						if (i->getLogin() == login && i->getPassword() == password)
 						{
-							sameLogins.push_back(i);
-							isSameLogins = true;
-						}
-					}
-
-					if (isSameLogins == true)
-					{
-						user<T, U>* entity = ht[bucket];
-						user<T, U>* prevEntity = NULL;
-
-						while (entity->getPassword() != sameLogins[0]->getPassword())
-						{
-							prevEntity = entity;
-							entity = entity->getNext();
-						}
-						if (prevEntity == NULL)
-						{
-							return entity;
-						}
-						else
-						{
-							return entity;
+							return i;
 						}
 					}
 				}
@@ -295,7 +271,7 @@ namespace hsbrdg
 
 			return static_cast<int>(hash_func(_user.getLogin())); // uint8_t doesn`t work with ASCII
 		}
-
+		
 	public:
 		hashtable()
 			:
