@@ -47,6 +47,11 @@ namespace hsbrdg
 			_login = login;
 		}
 
+		void setPassword(U password)
+		{
+			_password = password;
+		}
+
 		user* getNext() const 
 		{
 			return _next;
