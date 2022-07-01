@@ -11,25 +11,25 @@
 namespace hsbrdg
 {
 	template<typename T, typename U>
-	class user
+	class User
 	{
 	private:
 		T _login{};
 		U _password{};
-		user* _next{};
+		User* _next{};
 
 	public:
 		template<typename T, typename U>
-		friend std::istream& operator>>(std::istream& in, user<T, U>& _user);
+		friend std::istream& operator>>(std::istream& in, User<T, U>& _user);
 
-		user(const T& login, const U& password)
+		User(const T& login, const U& password)
 			:
 			_login(login), _password(password), _next(NULL)
 		{}
 
 
-		user() = default;
-		~user() = default;
+		User() = default;
+		~User() = default;
 
 	public:
 		T getLogin() const
@@ -52,26 +52,26 @@ namespace hsbrdg
 			_password = password;
 		}
 
-		user* getNext() const 
+		User* getNext() const
 		{
 			return _next;
 		}
 
-		void setNext(user* next)
+		void setNext(User* next)
 		{
 			_next = next;
 		}
 	};
 
 	template<typename T, typename U, uint8_t tableSize>
-	class hashtable 
+	class Hashtable 
 	{
 	private:
-		user<T, U>* ht[tableSize];
+		User<T, U>* ht[tableSize];
 
 	public:
 		template<typename T, typename U, uint8_t tableSize>
-		friend std::ostream& operator<<(std::ostream& in, const hashtable<T, U, tableSize>& _hashtable);
+		friend std::ostream& operator<<(std::ostream& in, const Hashtable<T, U, tableSize>& _hashtable);
 
 		uint8_t hash_func(const T& login) const 
 		{
@@ -93,8 +93,8 @@ namespace hsbrdg
 		void put(const T& login, const U& password)
 		{
 			uint8_t hashVal = hash_func(login);
-			user<T, U>* entry = ht[hashVal];
-			user<T, U>* prev = NULL;
+			User<T, U>* entry = ht[hashVal];
+			User<T, U>* prev = NULL;
 
 			while (entry != NULL)
 			{
@@ -104,12 +104,12 @@ namespace hsbrdg
 
 			if (prev == NULL)
 			{
-				entry = new user<T, U>(login, password);
+				entry = new User<T, U>(login, password);
 				ht[hashVal] = entry;
 			}
 			else
 			{
-				entry = new user<T, U>(login, password);
+				entry = new User<T, U>(login, password);
 				prev->setNext(entry);
 			}
 		}
@@ -118,8 +118,8 @@ namespace hsbrdg
 		{
 			bool isRemoved = false;
 
-			user<T, U>* tmp = NULL;
-			user<T, U>* prev = NULL;
+			User<T, U>* tmp = NULL;
+			User<T, U>* prev = NULL;
 
 			for (uint8_t bucket = 0; bucket != tableSize; ++bucket)
 			{
@@ -172,7 +172,7 @@ namespace hsbrdg
 				if (isRemoved == false)
 				{
 					bool isSameLogins = false;
-					std::vector<user<T, U>*> sameLogins;
+					std::vector<User<T, U>*> sameLogins;
 
 					for (auto i = ht[bucket]; i != NULL; i = i->getNext())
 					{
@@ -185,8 +185,8 @@ namespace hsbrdg
 
 					if (isSameLogins == true)
 					{
-						user<T, U>* entity = ht[bucket];
-						user<T, U>* prevEntity = NULL;
+						User<T, U>* entity = ht[bucket];
+						User<T, U>* prevEntity = NULL;
 
 						while (entity->getPassword() != sameLogins[0]->getPassword())
 						{
@@ -208,12 +208,12 @@ namespace hsbrdg
 			}
 		}
 
-		user<T, U>* get(const T& login, const U& password) const
+		User<T, U>* get(const T& login, const U& password) const
 		{
 			bool isFounded = false;
 
-			user<T, U>* tmp = NULL;
-			user<T, U>* prev = NULL;
+			User<T, U>* tmp = NULL;
+			User<T, U>* prev = NULL;
 
 			for (uint8_t bucket = 0; bucket != tableSize; ++bucket)
 			{
@@ -253,9 +253,6 @@ namespace hsbrdg
 
 				if (isFounded == false)
 				{
-					bool isSameLogins = false;
-					std::vector<user<T, U>*> sameLogins;
-
 					for (auto i = ht[bucket]; i != NULL; i = i->getNext())
 					{
 						if (i->getLogin() == login && i->getPassword() == password)
@@ -270,7 +267,7 @@ namespace hsbrdg
 	
 		int test_hash_func(void)
 		{
-			user<T, U> _user;
+			User<T, U> _user;
 
 			std::cin >> _user;
 
@@ -278,20 +275,20 @@ namespace hsbrdg
 		}
 		
 	public:
-		hashtable()
+		Hashtable()
 			:
 			ht()
 		{}
 
-		~hashtable()
+		~Hashtable()
 		{
 			for (uint8_t bucket = 0; bucket != tableSize; ++bucket)
 			{
-				user<T, U>* entry = ht[bucket];
+				User<T, U>* entry = ht[bucket];
 
 				while (entry != NULL)
 				{
-					user<T, U>* prev = entry;
+					User<T, U>* prev = entry;
 					entry = entry->getNext();
 
 					delete prev;
@@ -303,7 +300,7 @@ namespace hsbrdg
 	};
 
 	template<typename T, typename U>
-	std::istream& operator>>(std::istream& in, user<T, U>& _user)
+	std::istream& operator>>(std::istream& in, User<T, U>& _user)
 	{
 		std::cout << "login: ";
 		in >> _user._login;
@@ -315,11 +312,11 @@ namespace hsbrdg
 	}
 
 	template<typename T, typename U, uint8_t tableSize>
-	std::ostream& operator<<(std::ostream& out, const hashtable<T, U, tableSize>& _hashtable)
+	std::ostream& operator<<(std::ostream& out, const Hashtable<T, U, tableSize>& _hashtable)
 	{
 		for (uint8_t bucket = 0; bucket != tableSize; ++bucket)
 		{
-			user<T, U>* _user = _hashtable.ht[bucket];
+			User<T, U>* _user = _hashtable.ht[bucket];
 
 			if (_user == NULL)
 			{
