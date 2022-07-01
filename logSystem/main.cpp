@@ -14,12 +14,12 @@ int main(int argc, char** argv)
 	(void)argc;
 	(void)argv;
 
-	hashtable<std::string, std::string, 100> _hashtable;
+	Hashtable<std::string, std::string, 100> _hashtable;
 
 #if TEST_PUT
 	const std::string CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
 
-	std::vector<user<std::string, std::string>> u;
+	std::vector<User<std::string, std::string>> u;
 
 	std::random_device random_device;
 	std::mt19937 generator(random_device());
@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 
 	for (std::size_t i = 0; i != 5; ++i)
 	{
-		user<std::string, std::string> _user;
+		User<std::string, std::string> _user;
 		for (std::size_t j = 0; j != 4; ++j)
 		{
 			login_put += CHARACTERS[distribution(generator)];
