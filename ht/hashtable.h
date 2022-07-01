@@ -8,7 +8,7 @@
 #include <ctime>
 
 
-namespace hsbrdg
+namespace Hsbrdg
 {
 	template<typename T, typename U>
 	class User
