@@ -1,6 +1,6 @@
 #include "..\ht\hashtable.h"
 
-using namespace hsbrdg;
+using namespace Hsbrdg;
 
 #define TEST_PUT 1
 #define TEST_REMOVE 1
